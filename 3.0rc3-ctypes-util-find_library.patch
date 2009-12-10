@@ -1,27 +1,26 @@
 --- origsrc/Python-3.0rc3/Lib/ctypes/util.py	2008-05-23 12:26:46.000000000 -0500
 +++ src/Python-3.0rc3/Lib/ctypes/util.py	2008-11-25 19:34:30.784736200 -0600
-@@ -81,6 +81,26 @@
+@@ -81,6 +81,25 @@
                  continue
          return None
  
 +elif sys.platform == "cygwin":
-+    import re
 +    def find_library(name):
 +        for libdir in ['/usr/lib', '/usr/local/lib']:
 +            for libext in ['lib%s.dll.a' % name, 'lib%s.a' % name]:
 +                implib = os.path.join(libdir, libext)
 +                if not os.path.exists(implib):
 +                    continue
-+                cmd = "strings 2>/dev/null " + implib
++                cmd = "dlltool -I " + implib + " 2>/dev/null"
 +                f = os.popen(cmd)
 +                try:
 +                    data = f.read()
 +                finally:
 +                    f.close()
-+                res = re.search(r'\s+(cyg.*\.dll+)\s', data)
++                res = data.replace("\n","")
 +                if not res:
 +                    continue
-+                return res.group(1)
++                return res
 +        return None
 +
  elif os.name == "posix":
