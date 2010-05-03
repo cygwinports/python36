@@ -1,6 +1,7 @@
-category: Python Interpreters
-requires: crypt libbz2_1 libexpat1 libffi4 libgcc1 libgdbm4 libintl8 libncursesw10 libreadline7 libsqlite3_0 openssl zlib0
-sdesc: "Py3K language interpreter"
+category: Python Doc
+requires: 
+external-source: python3
+sdesc: "Py3K HTML documentation"
 ldesc: "Python is an interpreted, interactive object-oriented 
 programming language suitable (amongst other uses) for distributed 
 application development, scripting, numeric computing and system 

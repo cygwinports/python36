@@ -1,0 +1,14 @@
+--- origsrc/Python-3.1.2/setup.py	2010-05-03 01:24:56.922115600 -0500
++++ src/Python-3.1.2/setup.py	2010-05-03 01:25:11.231934000 -0500
+@@ -1543,6 +1543,11 @@ class PyBuildExt(build_ext):
+         if not '--with-system-ffi' in sysconfig.get_config_var("CONFIG_ARGS"):
+             return
+ 
++        if sys.platform == 'cygwin':
++            # provided by GCC
++            ext.libraries.append('ffi')
++            self.use_system_libffi = True
++
+         if sys.platform == 'darwin':
+             # OS X 10.5 comes with libffi.dylib; the include files are
+             # in /usr/include/ffi

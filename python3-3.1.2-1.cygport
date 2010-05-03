@@ -1,18 +1,21 @@
+doc_v=${PV}
 gentoo_overlay="http://overlays.gentoo.org/proj/python/browser/patches"
 
 DESCRIPTION="Python programming language"
 HOMEPAGE="http://www.python.org/"
-SRC_URI="http://www.python.org/ftp/python/${PV}/Python-${PV}.tar.bz2"
+SRC_URI="http://www.python.org/ftp/python/${PV}/Python-${PV}.tar.bz2
+         http://docs.python.org/py3k/archives/python-${doc_v}-docs-html.tar.bz2"
 PATCH_URI="
 	${gentoo_overlay}/3.0/22_all_internal-expat.patch?format=txt
 	3.1-dbm.patch
 	3.0b3-destdir.patch
 	3.1-enable-new-dtags.patch
-	3.0b3-no-libm.patch
 	3.0b3-tkinter.patch
 	3.0rc3-ctypes-util-find_library.patch
 	3.1-PATH_MAX.patch
 	3.1-ssl-threads.patch
+	3.1-system-libffi.patch
+	3.1-ncurses-abi6.patch
 "
 #	3.0b3-ossaudio.patch
 
@@ -23,18 +26,20 @@ pyrootdir=/usr/lib/python${slot}
 pyconfdir=${pyrootdir}/config
 pydylddir=${pyrootdir}/lib-dynload
 
-PKG_NAMES="${PN} ${PN}-test ${PN}-tkinter idle3"
-PKG_HINTS="setup test tkinter idle"
-python3_CONTENTS="--exclude=idle3 --exclude=idlelib
+PKG_NAMES="${PN} ${PN}-test ${PN}-tkinter idle3 ${PN}-doc"
+PKG_HINTS="setup test tkinter idle doc"
+python3_CONTENTS="--exclude=idle3 --exclude=idlelib --exclude=htmldocs
                   --exclude=_tkinter.dll --exclude=tkinter
                   --exclude=test --exclude=tests usr/"
 idle3_CONTENTS="usr/bin/idle3 ${pyrootdir#/}/idlelib/"
+python3_doc_CONTENTS="usr/share/doc/${PN}/htmldocs/"
 python3_test_CONTENTS="${pyrootdir#/}/*/test*/ ${pyrootdir#/}/test/"
-python3_tkinter_CONTENTS="${pydylddir#/}/_tkinter.dll ${pyrootdir#/}/tkinter/"
+python3_tkinter_CONTENTS="--exclude=test ${pydylddir#/}/_tkinter.dll ${pyrootdir#/}/tkinter/"
 
-DIFF_EXCLUDES="graminit.c plat-cygwin pyconfig.h.in"
+DIFF_EXCLUDES="plat-cygwin pyconfig.h.in"
 
 NO_AUTOHEADER=1
+CPPFLAGS+=" -I/usr/include/ncursesw"
 LDFLAGS+=" -L."
 CYGCONF_ARGS="
 	--enable-shared
@@ -55,4 +60,7 @@ src_install() {
 	dosym python-${slot}.pc /usr/lib/pkgconfig/python3.pc
 
 	dosym python${slot}/config/libpython${slot}.dll.a /usr/lib/libpython${slot}.dll.a
+
+	dodir /usr/share/doc/${PN}/htmldocs
+	cp -r ${S}/../python-${doc_v}-docs-html/* ${D}/usr/share/doc/${PN}/html/
 }
