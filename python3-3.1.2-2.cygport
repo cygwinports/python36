@@ -16,6 +16,7 @@ PATCH_URI="
 	3.1-ssl-threads.patch
 	3.1-system-libffi.patch
 	3.1-ncurses-abi6.patch
+	3.1-export-PySignal_SetWakeupFd.patch
 "
 #	3.0b3-ossaudio.patch
 
@@ -62,5 +63,5 @@ src_install() {
 	dosym python${slot}/config/libpython${slot}.dll.a /usr/lib/libpython${slot}.dll.a
 
 	dodir /usr/share/doc/${PN}/htmldocs
-	cp -r ${S}/../python-${doc_v}-docs-html/* ${D}/usr/share/doc/${PN}/html/
+	cp -r ${S}/../python-${doc_v}-docs-html/* ${D}/usr/share/doc/${PN}/htmldocs/
 }

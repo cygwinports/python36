@@ -1,0 +1,11 @@
+--- origsrc/Python-3.1.2/Include/pyerrors.h	2009-05-16 23:21:53.000000000 -0500
++++ src/Python-3.1.2/Include/pyerrors.h	2010-11-05 02:45:51.009912000 -0500
+@@ -218,7 +218,7 @@ PyAPI_FUNC(int) PyErr_CheckSignals(void)
+ PyAPI_FUNC(void) PyErr_SetInterrupt(void);
+ 
+ /* In signalmodule.c */
+-int PySignal_SetWakeupFd(int fd);
++PyAPI_FUNC(int) PySignal_SetWakeupFd(int fd);
+ 
+ /* Support for adding program text to SyntaxErrors */
+ PyAPI_FUNC(void) PyErr_SyntaxLocation(const char *, int);
