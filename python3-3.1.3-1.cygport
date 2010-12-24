@@ -49,6 +49,7 @@ CYGCONF_ARGS="
 	--with-libc=
 	--with-libm=
 	--with-system-ffi
+	ac_cv_func_bind_textdomain_codeset=yes
 "
 
 src_install() {
