@@ -1,0 +1,30 @@
+This is necessary for find_library_file to work where a library has only
+an implib but no static lib (e.g. sqlite3).
+
+--- origsrc/Python-3.2.3/Lib/distutils/cygwinccompiler.py	2012-04-11 01:54:02.000000000 -0500
++++ src/Python-3.2.3/Lib/distutils/cygwinccompiler.py	2012-06-22 19:37:11.740576800 -0500
+@@ -88,9 +88,7 @@ class CygwinCCompiler(UnixCCompiler):
+     compiler_type = 'cygwin'
+     obj_extension = ".o"
+     static_lib_extension = ".a"
+-    shared_lib_extension = ".dll"
+-    static_lib_format = "lib%s%s"
+-    shared_lib_format = "%s%s"
++    shared_lib_extension = ".dll.a"
+     exe_extension = ".exe"
+ 
+     def __init__(self, verbose=0, dry_run=0, force=0):
+--- origsrc/Python-3.2.3/setup.py	2012-06-22 16:57:07.767999800 -0500
++++ src/Python-3.2.3/setup.py	2012-06-26 01:25:24.029450000 -0500
+@@ -163,7 +163,10 @@ class PyBuildExt(build_ext):
+         # Detect which modules should be compiled
+         old_so = self.compiler.shared_lib_extension
+         # Workaround PEP 3149 stuff
+-        self.compiler.shared_lib_extension = os.environ.get("SO", ".so")
++        if self.get_platform() == 'cygwin':
++            self.compiler.shared_lib_extension = ".dll.a"
++        else:
++            self.compiler.shared_lib_extension = os.environ.get("SO", ".so")
+         try:
+             missing = self.detect_modules()
+         finally:

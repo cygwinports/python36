@@ -1,0 +1,46 @@
+--- origsrc/Python-3.2/Lib/distutils/command/build_ext.py	2010-12-15 15:07:22.000000000 -0600
++++ src/Python-3.2/Lib/distutils/command/build_ext.py	2011-03-28 00:24:45.905416600 -0500
+@@ -723,9 +723,9 @@ class build_ext(Command):
+             # extensions, it is a reference to the original list
+             return ext.libraries + [pythonlib]
+         elif sys.platform[:6] == "cygwin":
+-            template = "python%d.%d"
++            template = "python%d.%d%s"
+             pythonlib = (template %
+-                   (sys.hexversion >> 24, (sys.hexversion >> 16) & 0xff))
++                   (sys.hexversion >> 24, (sys.hexversion >> 16) & 0xff, sys.abiflags))
+             # don't extend ext.libraries, it may be shared with other
+             # extensions, it is a reference to the original list
+             return ext.libraries + [pythonlib]
+--- origsrc/Python-3.2/Makefile.pre.in	2011-03-27 23:18:06.283708200 -0500
++++ src/Python-3.2/Makefile.pre.in	2011-03-27 23:33:52.899935100 -0500
+@@ -506,7 +506,7 @@ $(PYTHONFRAMEWORKDIR)/Versions/$(VERSION
+ 
+ # This rule builds the Cygwin Python DLL and import library if configured
+ # for a shared core library; otherwise, this rule is a noop.
+-$(DLLLIBRARY) libpython$(VERSION).dll.a: $(LIBRARY_OBJS)
++$(DLLLIBRARY) libpython$(LDVERSION).dll.a: $(LIBRARY_OBJS)
+ 	if test -n "$(DLLLIBRARY)"; then \
+ 		$(LDSHARED) -Wl,--out-implib=$@ -o $(DLLLIBRARY) $^ \
+ 			$(LIBS) $(MODLIBS) $(SYSLIBS) $(LDLAST); \
+--- origsrc/Python-3.2/Modules/makesetup	2010-07-09 11:30:58.000000000 -0500
++++ src/Python-3.2/Modules/makesetup	2011-03-27 23:52:02.066232600 -0500
+@@ -91,7 +91,7 @@ CYGWIN*) if test $libdir = .
+ 	 else
+ 	 	ExtraLibDir='$(LIBPL)'
+ 	 fi
+-	 ExtraLibs="-L$ExtraLibDir -lpython\$(VERSION)";;
++	 ExtraLibs="-L$ExtraLibDir -lpython\$(LDVERSION)";;
+ esac
+ 
+ # Main loop
+--- origsrc/Python-3.2/configure.in	2011-02-19 02:58:23.000000000 -0600
++++ src/Python-3.2/configure.in	2011-03-27 23:38:50.798054500 -0500
+@@ -731,6 +731,7 @@ if test $enable_shared = "yes"; then
+   case $ac_sys_system in
+     CYGWIN*)
+           LDLIBRARY='libpython$(LDVERSION).dll.a'
++          BLDLIBRARY='-L. -lpython$(LDVERSION)'
+           DLLLIBRARY='libpython$(LDVERSION).dll'
+           ;;
+     SunOS*)
