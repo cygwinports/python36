@@ -13,6 +13,7 @@ PATCH_URI="
 	3.2-export-PySignal_SetWakeupFd.patch
 	3.2-cygwin-soname.patch
 	3.2-distutils-shlibext.patch
+	3.2-ctypes-libpython.patch
 "
 #	3.0b3-ossaudio.patch
 
