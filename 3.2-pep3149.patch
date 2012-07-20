@@ -1,0 +1,44 @@
+--- origsrc/Python-3.2.3/configure.in	2012-06-26 01:34:56.202240800 -0500
++++ src/Python-3.2.3/configure.in	2012-07-19 21:08:28.296884600 -0500
+@@ -3741,7 +3741,7 @@ then
+ 	  		*)    SO=.sl;;
+ 		esac
+ 		;;
+-	CYGWIN*)   SO=.dll;;
++	CYGWIN*)   SO=.${SOABI}.dll;;
+ 	Linux*|GNU*)
+ 		   SO=.${SOABI}.so;;
+ 	*)	   SO=.so;;
+--- origsrc/Python-3.2.3/Makefile.pre.in	2012-06-26 01:34:56.202240800 -0500
++++ src/Python-3.2.3/Makefile.pre.in	2012-07-19 20:55:24.189036200 -0500
+@@ -1067,12 +1067,11 @@ libainstall:	all python-config
+ 	done
+ 	@if test -d $(LIBRARY); then :; else \
+ 		if test "$(PYTHONFRAMEWORKDIR)" = no-framework; then \
+-			if test "$(SO)" = .dll; then \
+-				$(INSTALL_DATA) $(LDLIBRARY) $(DESTDIR)$(LIBPL) ; \
+-			else \
+-				$(INSTALL_DATA) $(LIBRARY) $(DESTDIR)$(LIBPL)/$(LIBRARY) ; \
+-				$(RANLIB) $(DESTDIR)$(LIBPL)/$(LIBRARY) ; \
+-			fi; \
++			case "$(SO)" in \
++			*.dll)	$(INSTALL_DATA) $(LDLIBRARY) $(DESTDIR)$(LIBPL) ;; \
++			*)	$(INSTALL_DATA) $(LIBRARY) $(DESTDIR)$(LIBPL)/$(LIBRARY) ; \
++				$(RANLIB) $(DESTDIR)$(LIBPL)/$(LIBRARY) ;; \
++			esac; \
+ 		else \
+ 			echo Skip install of $(LIBRARY) - use make frameworkinstall; \
+ 		fi; \
+--- origsrc/Python-3.2.3/Python/dynload_shlib.c	2012-04-11 01:54:08.000000000 -0500
++++ src/Python-3.2.3/Python/dynload_shlib.c	2012-07-19 20:28:01.691090700 -0500
+@@ -38,6 +38,10 @@
+ 
+ const struct filedescr _PyImport_DynLoadFiletab[] = {
+ #ifdef __CYGWIN__
++    {"." SOABI ".dll", "rb", C_EXTENSION},
++    {"module." SOABI ".dll", "rb", C_EXTENSION},
++    {".abi" PYTHON_ABI_STRING ".dll", "rb", C_EXTENSION},
++    {"module.abi" PYTHON_ABI_STRING ".dll", "rb", C_EXTENSION},
+     {".dll", "rb", C_EXTENSION},
+     {"module.dll", "rb", C_EXTENSION},
+ #else  /* !__CYGWIN__ */

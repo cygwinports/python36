@@ -1,0 +1,27 @@
+--- origsrc/Python-3.2.3/setup.py	2012-07-19 20:44:59.596311500 -0500
++++ src/Python-3.2.3/setup.py	2012-07-19 20:43:22.069733300 -0500
+@@ -1060,7 +1060,7 @@ class PyBuildExt(build_ext):
+ 
+         dbm_order = ['gdbm']
+         # The standard Unix dbm module:
+-        if platform not in ['cygwin']:
++        if platform not in ['win32']:
+             config_args = [arg.strip("'")
+                            for arg in sysconfig.get_config_var("CONFIG_ARGS").split()]
+             dbm_args = [arg for arg in config_args
+@@ -1111,6 +1111,15 @@ class PyBuildExt(build_ext):
+                                     ],
+                                 libraries = gdbm_libs)
+                             break
++                        if find_file("ndbm.h", inc_dirs, []) is not None:
++                            print("building dbm using gdbm")
++                            dbmext = Extension(
++                                '_dbm', ['_dbmmodule.c'],
++                                define_macros=[
++                                    ('HAVE_NDBM_H', None),
++                                    ],
++                                libraries = gdbm_libs)
++                            break
+                 elif cand == "bdb":
+                     if db_incs is not None:
+                         print("building dbm using bdb")
