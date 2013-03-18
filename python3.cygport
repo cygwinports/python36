@@ -1,6 +1,16 @@
-DESCRIPTION="Python programming language"
+NAME="python3"
+VERSION=3.2.3
+RELEASE=1
+CATEGORY="Python Interpreters"
+SUMMARY="Py3K language interpreter"
+DESCRIPTION="Python is an interpreted, interactive object-oriented
+programming language suitable (amongst other uses) for distributed
+application development, scripting, numeric computing and system
+testing.  Python is often compared to Tcl, Perl, Java, JavaScript,
+Visual Basic or Scheme."
 HOMEPAGE="http://www.python.org/"
-SRC_URI="http://www.python.org/ftp/python/${PV}/Python-${PV}.tar.bz2"
+SRC_URI="http://www.python.org/ftp/python/${PV}/Python-${VERSION}.tar.bz2"
+SRC_DIR="Python-${VERSION}"
 PATCH_URI="
 	3.2-dbm.patch
 	3.1-enable-new-dtags.patch
@@ -8,7 +18,6 @@ PATCH_URI="
 	3.0rc3-ctypes-util-find_library.patch
 	3.1-PATH_MAX.patch
 	3.1-ssl-threads.patch
-	3.1-system-libffi.patch
 	3.1-ncurses-abi6.patch
 	3.2-export-PySignal_SetWakeupFd.patch
 	3.2-cygwin-soname.patch
@@ -18,8 +27,6 @@ PATCH_URI="
 "
 #	3.0b3-ossaudio.patch
 
-SRC_DIR="Python-${PV}"
-
 slot=${PV:0:3}
 abi=${slot}m
 pyrootdir=/usr/lib/python${slot}
@@ -27,11 +34,13 @@ pyconfdir=${pyrootdir}/config-${abi}
 pydylddir=${pyrootdir}/lib-dynload
 
 PKG_NAMES="${PN} ${PN}-test ${PN}-tkinter idle3"
-PKG_HINTS="setup test tkinter idle"
 python3_CONTENTS="--exclude=idle3* --exclude=idlelib --exclude=_tkinter*.dll
                   --exclude=tkinter --exclude=test --exclude=tests usr/"
+idle3_SUMMARY="Py3K Tkinter_based IDE"
 idle3_CONTENTS="usr/bin/idle3* ${pyrootdir#/}/idlelib/"
+python3_test_SUMMARY="Py3K tests"
 python3_test_CONTENTS="${pyrootdir#/}/*/test*/ ${pyrootdir#/}/test/"
+python3_tkinter_SUMMARY="Py3K Tkinter GUI module"
 python3_tkinter_CONTENTS="--exclude=test ${pydylddir#/}/_tkinter*.dll ${pyrootdir#/}/tkinter/"
 
 DIFF_EXCLUDES="plat-cygwin pyconfig.h.in"
@@ -46,6 +55,7 @@ CYGCONF_ARGS="
 	--with-libm=
 	--with-system-expat
 	--with-system-ffi
+	${ARCH_x86_64+--without-threads}
 	ac_cv_func_bind_textdomain_codeset=yes
 "
 
