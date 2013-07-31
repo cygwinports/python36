@@ -1,5 +1,5 @@
 NAME="python3"
-VERSION=3.2.3
+VERSION=3.2.5
 RELEASE=1
 CATEGORY="Python Interpreters"
 SUMMARY="Py3K language interpreter"
@@ -9,7 +9,7 @@ application development, scripting, numeric computing and system
 testing.  Python is often compared to Tcl, Perl, Java, JavaScript,
 Visual Basic or Scheme."
 HOMEPAGE="http://www.python.org/"
-SRC_URI="http://www.python.org/ftp/python/${PV}/Python-${VERSION}.tar.bz2"
+SRC_URI="http://www.python.org/ftp/python/${VERSION}/Python-${VERSION}.tar.bz2"
 SRC_DIR="Python-${VERSION}"
 PATCH_URI="
 	3.2-dbm.patch
@@ -24,6 +24,9 @@ PATCH_URI="
 	3.2-distutils-shlibext.patch
 	3.2-ctypes-libpython.patch
 	3.2-pep3149.patch
+	3.2-export-PyNode_SizeOf.patch
+	3.2-format-parsetuple.patch
+	3.2-thread-cygwin64.patch
 "
 #	3.0b3-ossaudio.patch
 
@@ -33,15 +36,19 @@ pyrootdir=/usr/lib/python${slot}
 pyconfdir=${pyrootdir}/config-${abi}
 pydylddir=${pyrootdir}/lib-dynload
 
-PKG_NAMES="${PN} ${PN}-test ${PN}-tkinter idle3"
+PKG_NAMES="${NAME} ${NAME}-test ${NAME}-tkinter idle3"
 python3_CONTENTS="--exclude=idle3* --exclude=idlelib --exclude=_tkinter*.dll
-                  --exclude=tkinter --exclude=test --exclude=tests usr/"
+                  --exclude=tkinter --exclude=test --exclude=tests
+                  --exclude=turtle* usr/"
 idle3_SUMMARY="Py3K Tkinter_based IDE"
 idle3_CONTENTS="usr/bin/idle3* ${pyrootdir#/}/idlelib/"
 python3_test_SUMMARY="Py3K tests"
-python3_test_CONTENTS="${pyrootdir#/}/*/test*/ ${pyrootdir#/}/test/"
+python3_test_CONTENTS="${pyrootdir#/}/*/test*/ ${pyrootdir#/}/test/ ${pyrootdir#/}/turtledemo/"
 python3_tkinter_SUMMARY="Py3K Tkinter GUI module"
-python3_tkinter_CONTENTS="--exclude=test ${pydylddir#/}/_tkinter*.dll ${pyrootdir#/}/tkinter/"
+python3_tkinter_REQUIRES="tcl-tix"
+python3_tkinter_CONTENTS="--exclude=test ${pydylddir#/}/_tkinter*
+                          ${pyrootdir#/}/tkinter/ ${pyrootdir#/}/turtle.py
+                          ${pyrootdir#/}/__pycache__/turtle.*"
 
 DIFF_EXCLUDES="plat-cygwin pyconfig.h.in"
 
@@ -55,7 +62,6 @@ CYGCONF_ARGS="
 	--with-libm=
 	--with-system-expat
 	--with-system-ffi
-	${ARCH_x86_64+--without-threads}
 	ac_cv_func_bind_textdomain_codeset=yes
 "
 

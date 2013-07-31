@@ -34,8 +34,8 @@
  esac
  
  # Main loop
---- origsrc/Python-3.2/configure.in	2011-02-19 02:58:23.000000000 -0600
-+++ src/Python-3.2/configure.in	2011-03-27 23:38:50.798054500 -0500
+--- origsrc/Python-3.2/configure.ac	2011-02-19 02:58:23.000000000 -0600
++++ src/Python-3.2/configure.ac	2011-03-27 23:38:50.798054500 -0500
 @@ -731,6 +731,7 @@ if test $enable_shared = "yes"; then
    case $ac_sys_system in
      CYGWIN*)
