@@ -1,6 +1,6 @@
 NAME="python3"
 VERSION=3.2.5
-RELEASE=2
+RELEASE=3
 CATEGORY="Python Interpreters"
 SUMMARY="Py3K language interpreter"
 DESCRIPTION="Python is an interpreted, interactive object-oriented
@@ -13,6 +13,7 @@ SRC_URI="http://www.python.org/ftp/python/${VERSION}/Python-${VERSION}.tar.bz2"
 SRC_DIR="Python-${VERSION}"
 PATCH_URI="
 	http://bugs.python.org/file31331/CVE-2013-4238-py32.patch
+	http://bugs.python.org/file31377/uuid.patch
 	3.2-dbm.patch
 	3.1-enable-new-dtags.patch
 	3.0b3-tkinter.patch
