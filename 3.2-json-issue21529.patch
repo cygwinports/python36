@@ -1,0 +1,38 @@
+# HG changeset patch
+# User Benjamin Peterson <benjamin@python.org>
+# Date 1397441438 14400
+# Node ID 8130b8c066062bc589d337aebd3da4b156ee7f45
+# Parent  b9913eb9664383b8dcb6d82048a4b5bbe8d4706b
+in scan_once, prevent the reading of arbitrary memory when passed a negative index
+
+Bug reported by Guido Vranken.
+
+diff --git a/Lib/test/json_tests/test_decode.py b/Lib/test/json_tests/test_decode.py
+--- a/Lib/test/json_tests/test_decode.py
++++ b/Lib/test/json_tests/test_decode.py
+@@ -70,5 +70,9 @@ class TestDecode:
+         msg = 'escape'
+         self.assertRaisesRegex(ValueError, msg, self.loads, s)
+ 
++    def test_negative_index(self):
++        d = self.json.JSONDecoder()
++        self.assertRaises(ValueError, d.raw_decode, 'a'*42, -50000)
++
+ class TestPyDecode(TestDecode, PyTest): pass
+ class TestCDecode(TestDecode, CTest): pass
+diff --git a/Modules/_json.c b/Modules/_json.c
+--- a/Modules/_json.c
++++ b/Modules/_json.c
+@@ -930,7 +930,10 @@ scan_once_unicode(PyScannerObject *s, Py
+     PyObject *res;
+     Py_UNICODE *str = PyUnicode_AS_UNICODE(pystr);
+     Py_ssize_t length = PyUnicode_GET_SIZE(pystr);
+-    if (idx >= length) {
++    if (idx < 0)
++        /* Compatibility with Python version. */
++        idx += length;
++    if (idx < 0 || idx >= length) {
+         PyErr_SetNone(PyExc_StopIteration);
+         return NULL;
+     }
+

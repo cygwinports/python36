@@ -1,6 +1,6 @@
 NAME="python3"
 VERSION=3.2.5
-RELEASE=3
+RELEASE=4
 CATEGORY="Python Interpreters"
 SUMMARY="Py3K language interpreter"
 DESCRIPTION="Python is an interpreted, interactive object-oriented
@@ -29,6 +29,7 @@ PATCH_URI="
 	3.2-export-PyNode_SizeOf.patch
 	3.2-format-parsetuple.patch
 	3.2-thread-cygwin64.patch
+	3.2-json-issue21529.patch
 "
 #	3.0b3-ossaudio.patch
 
