@@ -3,11 +3,12 @@ VERSION=3.2.5
 RELEASE=4
 CATEGORY="Python Interpreters"
 SUMMARY="Py3K language interpreter"
-DESCRIPTION="Python is an interpreted, interactive object-oriented
-programming language suitable (amongst other uses) for distributed
-application development, scripting, numeric computing and system
-testing.  Python is often compared to Tcl, Perl, Java, JavaScript,
-Visual Basic or Scheme."
+DESCRIPTION="Python is an interpreted, interactive, object-oriented programming
+language. It incorporates modules, exceptions, dynamic typing, very high level
+dynamic data types, and classes. Python combines remarkable power with very
+clear syntax. It has interfaces to many system calls and libraries, as well as
+to various window systems, and is extensible in C or C++. It is also usable as
+an extension language for applications that need a programmable interface."
 HOMEPAGE="http://www.python.org/"
 SRC_URI="http://www.python.org/ftp/python/${VERSION}/Python-${VERSION}.tar.bz2"
 SRC_DIR="Python-${VERSION}"
