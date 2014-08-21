@@ -41,7 +41,7 @@ pyconfdir=${pyrootdir}/config-${abi}
 pydylddir=${pyrootdir}/lib-dynload
 
 PKG_NAMES="${NAME} ${NAME}-test ${NAME}-tkinter idle3"
-python3_REQUIRES="libuuid-devel" # uuid.py via ctypes.util.find_library
+python3_REQUIRES="binutils libuuid-devel" # ctypes.util.find_library, uuid.py
 python3_CONTENTS="--exclude=idle3* --exclude=idlelib --exclude=_tkinter*.dll
                   --exclude=tkinter --exclude=test --exclude=tests
                   --exclude=turtle* usr/"
