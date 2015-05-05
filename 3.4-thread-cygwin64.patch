@@ -1,9 +1,7 @@
-http://cygwin.com/ml/cygwin-apps/2013-07/msg00362.html
-
---- origsrc/Python-3.2.5/Include/pythread.h	2013-05-15 11:33:42.000000000 -0500
-+++ src/Python-3.2.5/Include/pythread.h	2013-07-30 18:31:53.768781800 -0500
-@@ -75,11 +75,11 @@ PyAPI_FUNC(size_t) PyThread_get_stacksiz
- PyAPI_FUNC(int) PyThread_set_stacksize(size_t);
+--- origsrc/Python-3.4.3/Include/pythread.h	2015-02-25 05:27:44.000000000 -0600
++++ src/Python-3.4.3/Include/pythread.h	2015-05-05 11:27:20.117994100 -0500
+@@ -77,11 +77,11 @@ PyAPI_FUNC(int) PyThread_set_stacksize(s
+ PyAPI_FUNC(PyObject*) PyThread_GetInfo(void);
  
  /* Thread Local Storage (TLS) API */
 -PyAPI_FUNC(int) PyThread_create_key(void);
@@ -19,19 +17,19 @@ http://cygwin.com/ml/cygwin-apps/2013-07/msg00362.html
  
  /* Cleanup after a fork */
  PyAPI_FUNC(void) PyThread_ReInitTLS(void);
---- origsrc/Python-3.2.5/Python/pystate.c	2013-05-15 11:33:57.000000000 -0500
-+++ src/Python-3.2.5/Python/pystate.c	2013-07-30 18:38:48.685513700 -0500
+--- origsrc/Python-3.4.3/Python/pystate.c	2015-02-25 05:27:46.000000000 -0600
++++ src/Python-3.4.3/Python/pystate.c	2015-05-05 11:27:20.122994700 -0500
 @@ -37,7 +37,7 @@ static PyThread_type_lock head_mutex = N
     GILState implementation
  */
  static PyInterpreterState *autoInterpreterState = NULL;
 -static int autoTLSkey = 0;
-+static long autoTLSkey = 0;
++static long autoTLSkey = 0L;
  #else
  #define HEAD_INIT() /* Nothing */
  #define HEAD_LOCK() /* Nothing */
---- origsrc/Python-3.2.5/Python/thread_pthread.h	2013-05-15 11:33:57.000000000 -0500
-+++ src/Python-3.2.5/Python/thread_pthread.h	2013-07-30 18:37:46.092933600 -0500
+--- origsrc/Python-3.4.3/Python/thread_pthread.h	2015-02-25 05:27:46.000000000 -0600
++++ src/Python-3.4.3/Python/thread_pthread.h	2015-05-05 11:27:20.126495200 -0500
 @@ -603,28 +603,28 @@ _pythread_pthread_set_stacksize(size_t s
  
  #define Py_HAVE_NATIVE_TLS
@@ -43,7 +41,7 @@ http://cygwin.com/ml/cygwin-apps/2013-07/msg00362.html
      pthread_key_t key;
      int fail = pthread_key_create(&key, NULL);
 -    return fail ? -1 : key;
-+    return fail ? (long) -1 : (long) key;
++    return fail ? -1L : (long) key;
  }
  
  void
@@ -65,8 +63,8 @@ http://cygwin.com/ml/cygwin-apps/2013-07/msg00362.html
 +PyThread_set_key_value(long key, void *value)
  {
      int fail;
-     void *oldValue = pthread_getspecific(key);
-@@ -635,7 +635,7 @@ PyThread_set_key_value(int key, void *va
+     fail = pthread_setspecific(key, value);
+@@ -632,7 +632,7 @@ PyThread_set_key_value(int key, void *va
  }
  
  void *

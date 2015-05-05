@@ -1,6 +1,6 @@
 NAME="python3"
-VERSION=3.2.5
-RELEASE=4
+VERSION=3.4.3
+RELEASE=1
 CATEGORY="Python Interpreters"
 SUMMARY="Py3K language interpreter"
 DESCRIPTION="Python is an interpreted, interactive, object-oriented programming
@@ -10,27 +10,24 @@ clear syntax. It has interfaces to many system calls and libraries, as well as
 to various window systems, and is extensible in C or C++. It is also usable as
 an extension language for applications that need a programmable interface."
 HOMEPAGE="http://www.python.org/"
-SRC_URI="http://www.python.org/ftp/python/${VERSION}/Python-${VERSION}.tar.bz2"
+SRC_URI="http://www.python.org/ftp/python/${VERSION}/Python-${VERSION}.tar.xz"
 SRC_DIR="Python-${VERSION}"
 PATCH_URI="
-	http://bugs.python.org/file31331/CVE-2013-4238-py32.patch
-	http://bugs.python.org/file31377/uuid.patch
-	3.2-dbm.patch
+	3.4-dbm-cygwin.patch
 	3.1-enable-new-dtags.patch
-	3.0b3-tkinter.patch
-	3.0rc3-ctypes-util-find_library.patch
+	3.4-tkinter-cygwin.patch
+	3.4-ctypes-cygwin.patch
 	3.1-PATH_MAX.patch
-	3.1-ssl-threads.patch
 	3.1-ncurses-abi6.patch
 	3.2-export-PySignal_SetWakeupFd.patch
-	3.2-cygwin-soname.patch
+	3.4-distutils-soname.patch
 	3.2-distutils-shlibext.patch
-	3.2-ctypes-libpython.patch
-	3.2-pep3149.patch
-	3.2-export-PyNode_SizeOf.patch
-	3.2-format-parsetuple.patch
-	3.2-thread-cygwin64.patch
-	3.2-json-issue21529.patch
+	3.4-pep3149-cygwin.patch
+	3.4-thread-cygwin64.patch
+	3.2-getpath-exe-extension.patch
+	3.4-select-cygwin.patch
+	3.4-signal-cygwin.patch
+	3.4-struct-cygwin.patch
 "
 #	3.0b3-ossaudio.patch
 
@@ -42,13 +39,26 @@ pydylddir=${pyrootdir}/lib-dynload
 
 PKG_NAMES="${NAME} ${NAME}-test ${NAME}-tkinter idle3"
 python3_REQUIRES="binutils libuuid-devel" # ctypes.util.find_library, uuid.py
-python3_CONTENTS="--exclude=idle3* --exclude=idlelib --exclude=_tkinter*.dll
-                  --exclude=tkinter --exclude=test --exclude=tests
-                  --exclude=turtle* usr/"
+python3_CONTENTS="--exclude=idle3* --exclude=idlelib
+	--exclude=_tkinter*.dll --exclude=tkinter --exclude=turtle*
+	--exclude=${pyrootdir#/}/*/test
+	--exclude=${pyrootdir#/}/*/tests
+	usr/bin/
+	${pyrootdir#/}/[^t]* ${pyrootdir#/}/t[^e]* ${pyrootdir#/}/te[^s]*
+	${pyrootdir#/}/test/__init__.py
+	${pyrootdir#/}/test/__pycache__/__init__.*
+	${pyrootdir#/}/test/support/
+	usr/include/ usr/lib/*.a usr/lib/pkgconfig/
+	usr/share/doc/ usr/share/man/"
 idle3_SUMMARY="Py3K Tkinter_based IDE"
-idle3_CONTENTS="usr/bin/idle3* ${pyrootdir#/}/idlelib/"
+idle3_CONTENTS="--exclude=idle_test etc/ usr/bin/idle3* ${pyrootdir#/}/idlelib/
+	usr/share/applications/ usr/share/icons/"
 python3_test_SUMMARY="Py3K tests"
-python3_test_CONTENTS="${pyrootdir#/}/*/test*/ ${pyrootdir#/}/test/ ${pyrootdir#/}/turtledemo/"
+python3_test_CONTENTS="
+	--exclude=${pyrootdir#/}/test/__init__.py
+	--exclude=${pyrootdir#/}/test/__pycache__/__init__.*
+	--exclude=${pyrootdir#/}/test/support
+	${pyrootdir#/}/*/test/ ${pyrootdir#/}/*/tests/ ${pyrootdir#/}/test/ ${pyrootdir#/}/idlelib/idle_test/ ${pyrootdir#/}/turtledemo/"
 python3_tkinter_SUMMARY="Py3K Tkinter GUI module"
 python3_tkinter_REQUIRES="tcl-tix"
 python3_tkinter_CONTENTS="--exclude=test ${pydylddir#/}/_tkinter*
@@ -58,7 +68,6 @@ python3_tkinter_CONTENTS="--exclude=test ${pydylddir#/}/_tkinter*
 DIFF_EXCLUDES="plat-cygwin pyconfig.h.in"
 
 NO_AUTOHEADER=1
-CPPFLAGS+=" -I/usr/include/ncursesw"
 CYGCONF_ARGS="
 	--enable-shared
 	--enable-ipv6
@@ -67,6 +76,7 @@ CYGCONF_ARGS="
 	--with-libm=
 	--with-system-expat
 	--with-system-ffi
+	--without-ensurepip
 	ac_cv_func_bind_textdomain_codeset=yes
 "
 
@@ -84,4 +94,11 @@ src_install() {
 	dosym idle${slot} /usr/bin/idle3
 	dosym pydoc${slot} /usr/bin/pydoc3
 	sed -i -e '1 s/\.exe//' ${D}/usr/bin/*${slot}
+
+	for i in 16 32 48
+	do
+		insinto /usr/share/icons/hicolor/${i}x${i}/apps
+		newins ${S}/Lib/idlelib/Icons/idle_${i}.png idle3.png
+	done
+	make_desktop_entry idle3 "IDLE ${slot}" idle3 "Development;IDE"
 }
