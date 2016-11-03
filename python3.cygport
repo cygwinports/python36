@@ -1,5 +1,5 @@
 NAME="python3"
-VERSION=3.4.3
+VERSION=3.4.5
 RELEASE=1
 CATEGORY="Python Interpreters"
 SUMMARY="Py3K language interpreter"
@@ -28,6 +28,7 @@ PATCH_URI="
 	3.4-select-cygwin.patch
 	3.4-signal-cygwin.patch
 	3.4-struct-cygwin.patch
+	3.4-shebang.patch
 "
 #	3.0b3-ossaudio.patch
 
@@ -37,33 +38,105 @@ pyrootdir=/usr/lib/python${slot}
 pyconfdir=${pyrootdir}/config-${abi}
 pydylddir=${pyrootdir}/lib-dynload
 
-PKG_NAMES="${NAME} ${NAME}-test ${NAME}-tkinter idle3"
+PKG_NAMES="${NAME} ${NAME}-devel ${NAME}-test ${NAME}-tkinter idle3"
 python3_REQUIRES="binutils libuuid-devel" # ctypes.util.find_library, uuid.py
-python3_CONTENTS="--exclude=idle3* --exclude=idlelib
+python3_CONTENTS="
+	--exclude=idle3* --exclude=idlelib
 	--exclude=_tkinter*.dll --exclude=tkinter --exclude=turtle*
 	--exclude=${pyrootdir#/}/*/test
 	--exclude=${pyrootdir#/}/*/tests
-	usr/bin/
-	${pyrootdir#/}/[^t]* ${pyrootdir#/}/t[^e]* ${pyrootdir#/}/te[^s]*
+	--exclude=*_test*.dll
+	usr/bin/2to3*
+	usr/bin/libpython${abi}.dll
+	usr/bin/pydoc*
+	usr/bin/python3
+	usr/bin/python${slot}
+	usr/bin/python${abi}.exe
+	usr/bin/pyvenv*
+	usr/include/python${abi}/pyconfig.h
+	${pydylddir#/}/
+	${pyrootdir#/}/asyncio/
+	${pyrootdir#/}/collections/
+	${pyrootdir#/}/concurrent/
+	${pyrootdir#/}/config-${abi}/Makefile
+	${pyrootdir#/}/ctypes/
+	${pyrootdir#/}/curses/
+	${pyrootdir#/}/dbm/
+	${pyrootdir#/}/distutils/
+	${pyrootdir#/}/email/
+	${pyrootdir#/}/encodings/
+	${pyrootdir#/}/ensurepip/
+	${pyrootdir#/}/html/
+	${pyrootdir#/}/http/
+	${pyrootdir#/}/importlib/
+	${pyrootdir#/}/json/
+	${pyrootdir#/}/lib2to3/
+	${pyrootdir#/}/logging/
+	${pyrootdir#/}/multiprocessing/
+	${pyrootdir#/}/plat-cygwin/
+	${pyrootdir#/}/pydoc_data/
+	${pyrootdir#/}/site-packages/
+	${pyrootdir#/}/sqlite3/
 	${pyrootdir#/}/test/__init__.py
 	${pyrootdir#/}/test/__pycache__/__init__.*
 	${pyrootdir#/}/test/support/
-	usr/include/ usr/lib/*.a usr/lib/pkgconfig/
-	usr/share/doc/ usr/share/man/"
+	${pyrootdir#/}/unittest/
+	${pyrootdir#/}/urllib/
+	${pyrootdir#/}/venv/
+	${pyrootdir#/}/wsgiref/
+	${pyrootdir#/}/xml/
+	${pyrootdir#/}/xmlrpc/
+	${pyrootdir#/}/*.py
+	${pyrootdir#/}/__pycache__/
+	usr/share/doc/
+	usr/share/man/
+	var/lib/rebase/dynpath.d/
+"
+python3_devel_CONTENTS="
+	--exclude=usr/include/python${abi}/pyconfig.h
+	--exclude=${pyrootdir#/}/config-${abi}/Makefile
+	usr/bin/python3*-config
+	usr/include/
+	${pyrootdir#/}/config-${abi}/
+	usr/lib/*.a
+	usr/lib/pkgconfig/
+"
 idle3_SUMMARY="Py3K Tkinter_based IDE"
-idle3_CONTENTS="--exclude=idle_test etc/ usr/bin/idle3* ${pyrootdir#/}/idlelib/
-	usr/share/applications/ usr/share/icons/"
+idle3_REQUIRES="python3-tkinter"
+idle3_CONTENTS="
+	--exclude=idle_test
+	etc/
+	usr/bin/idle3*
+	${pyrootdir#/}/idlelib/
+	${pyrootdir#/}/turtledemo/
+	usr/share/applications/
+	usr/share/icons/
+"
 python3_test_SUMMARY="Py3K tests"
 python3_test_CONTENTS="
 	--exclude=${pyrootdir#/}/test/__init__.py
 	--exclude=${pyrootdir#/}/test/__pycache__/__init__.*
 	--exclude=${pyrootdir#/}/test/support
-	${pyrootdir#/}/*/test/ ${pyrootdir#/}/*/tests/ ${pyrootdir#/}/test/ ${pyrootdir#/}/idlelib/idle_test/ ${pyrootdir#/}/turtledemo/"
+	${pydylddir#/}/*_test*.dll
+	${pyrootdir#/}/ctypes/test/
+	${pyrootdir#/}/distutils/tests/
+	${pyrootdir#/}/idlelib/idle_test/
+	${pyrootdir#/}/lib2to3/tests/
+	${pyrootdir#/}/sqlite3/test/
+	${pyrootdir#/}/test/
+	${pyrootdir#/}/tkinter/test/
+	${pyrootdir#/}/unittest/test/
+"
 python3_tkinter_SUMMARY="Py3K Tkinter GUI module"
 python3_tkinter_REQUIRES="tcl-tix"
-python3_tkinter_CONTENTS="--exclude=test ${pydylddir#/}/_tkinter*
-                          ${pyrootdir#/}/tkinter/ ${pyrootdir#/}/turtle.py
-                          ${pyrootdir#/}/__pycache__/turtle.*"
+python3_tkinter_CONTENTS="
+	--exclude=test ${pydylddir#/}/_tkinter*
+	${pyrootdir#/}/tkinter/
+	${pyrootdir#/}/turtle.py
+	${pyrootdir#/}/__pycache__/turtle.*
+"
+
+REQUIRES_EXCLUDE_FROM="$pyrootdir/distutils/command/\*.exe:$pyrootdir/lib2to3/tests/data/\*.py:$pyrootdir/test"
 
 DIFF_EXCLUDES="plat-cygwin pyconfig.h.in"
 
@@ -85,14 +158,19 @@ src_install() {
 	dodir /usr
 	cygmake -j1 DESTDIR=${D} altinstall maninstall
 
+	rm -f ${D}${pyrootdir}/LICENSE.txt
+
 	dosym python${abi}.exe /usr/bin/python3
 	dosym python${abi}-config /usr/bin/python3-config
+	dosym python${abi}-config /usr/bin/python${slot}-config
 	dosym python-${slot}.pc /usr/lib/pkgconfig/python3.pc
 
 	dosym ${pyconfdir#/usr/lib/}/libpython${abi}.dll.a /usr/lib/libpython${abi}.dll.a
+	dosym ${pyconfdir#/usr/lib/}/libpython${abi}.dll.a /usr/lib/libpython${slot}.dll.a
 
 	dosym idle${slot} /usr/bin/idle3
 	dosym pydoc${slot} /usr/bin/pydoc3
+	dosym pyvenv-${slot} /usr/bin/pyvenv3
 	sed -i -e '1 s/\.exe//' ${D}/usr/bin/*${slot}
 
 	for i in 16 32 48
@@ -101,4 +179,7 @@ src_install() {
 		newins ${S}/Lib/idlelib/Icons/idle_${i}.png idle3.png
 	done
 	make_desktop_entry idle3 "IDLE ${slot}" idle3 "Development;IDE"
+
+	dodir /var/lib/rebase/dynpath.d
+	echo ${pyrootdir}/site-packages > ${D}/var/lib/rebase/dynpath.d/${NAME}
 }
