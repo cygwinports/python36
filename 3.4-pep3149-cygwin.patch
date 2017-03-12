@@ -11,12 +11,27 @@
      "." SOABI ".so",
 --- origsrc/Python-3.4.3/configure.ac	2015-02-25 05:27:46.000000000 -0600
 +++ src/Python-3.4.3/configure.ac	2015-05-05 11:24:25.915873200 -0500
+@@ -864,6 +864,14 @@ cat >> conftest.c <<EOF
+         i386-gnu
+ #elif defined(__APPLE__)
+         darwin
++#elif defined(__CYGWIN__)
++# if defined(__x86_64__)
++        x86_64-cygwin
++# elif defined(__i386__)
++        i386-cygwin
++# else
++#   error unknown platform triplet
++# endif
+ #else
+ # error unknown platform triplet
+ #endif
 @@ -4096,7 +4097,7 @@ AC_MSG_RESULT($SOABI)
  
  AC_SUBST(EXT_SUFFIX)
  case $ac_sys_system in
--    Linux*|GNU*)
-+    Linux*|GNU*|CYGWIN*)
+-    Linux*|GNU*|Darwin)
++    Linux*|GNU*|Darwin|CYGWIN*)
  	EXT_SUFFIX=.${SOABI}${SHLIB_SUFFIX};;
      *)
  	EXT_SUFFIX=${SHLIB_SUFFIX};;
