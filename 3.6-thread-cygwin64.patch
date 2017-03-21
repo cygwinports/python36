@@ -1,7 +1,7 @@
---- origsrc/Python-3.5.3/Include/pythread.h	2017-01-17 01:57:48.000000000 -0600
-+++ src/Python-3.5.3/Include/pythread.h	2017-03-04 22:18:45.166059700 -0600
-@@ -77,11 +77,11 @@ PyAPI_FUNC(int) PyThread_set_stacksize(s
- PyAPI_FUNC(PyObject*) PyThread_GetInfo(void);
+--- origsrc/Python-3.6.1rc1/Include/pythread.h	2017-03-04 11:25:04.000000000 -0600
++++ src/Python-3.6.1rc1/Include/pythread.h	2017-03-12 14:26:43.582078500 -0500
+@@ -74,11 +74,11 @@ PyAPI_FUNC(PyObject*) PyThread_GetInfo(v
+ #endif
  
  /* Thread Local Storage (TLS) API */
 -PyAPI_FUNC(int) PyThread_create_key(void);
@@ -17,18 +17,18 @@
  
  /* Cleanup after a fork */
  PyAPI_FUNC(void) PyThread_ReInitTLS(void);
---- origsrc/Python-3.5.3/Python/pystate.c	2017-01-17 01:57:54.000000000 -0600
-+++ src/Python-3.5.3/Python/pystate.c	2017-03-04 22:18:45.174567200 -0600
-@@ -45,7 +45,7 @@ static PyThread_type_lock head_mutex = N
+--- origsrc/Python-3.6.1rc1/Python/pystate.c	2017-03-04 11:25:04.000000000 -0600
++++ src/Python-3.6.1rc1/Python/pystate.c	2017-03-12 14:26:43.582078500 -0500
+@@ -47,7 +47,7 @@ static PyThread_type_lock head_mutex = N
     GILState implementation
  */
  static PyInterpreterState *autoInterpreterState = NULL;
--static int autoTLSkey = 0;
-+static long autoTLSkey = 0L;
+-static int autoTLSkey = -1;
++static long autoTLSkey = -1L;
  #else
  #define HEAD_INIT() /* Nothing */
  #define HEAD_LOCK() /* Nothing */
-@@ -705,7 +705,7 @@ _PyGILState_Init(PyInterpreterState *i,
+@@ -713,7 +713,7 @@ _PyGILState_Init(PyInterpreterState *i,
  {
      assert(i && t); /* must init with valid states */
      autoTLSkey = PyThread_create_key();
@@ -37,7 +37,7 @@
          Py_FatalError("Could not allocate TLS entry");
      autoInterpreterState = i;
      assert(PyThread_get_key_value(autoTLSkey) == NULL);
-@@ -730,7 +730,7 @@ _PyGILState_Reinit(void)
+@@ -745,7 +745,7 @@ _PyGILState_Reinit(void)
  {
      PyThreadState *tstate = PyGILState_GetThisThreadState();
      PyThread_delete_key(autoTLSkey);
@@ -46,8 +46,8 @@
          Py_FatalError("Could not allocate TLS entry");
  
      /* If the thread had an associated auto thread state, reassociate it with
---- origsrc/Python-3.5.3/Python/thread_pthread.h	2017-01-17 01:57:54.000000000 -0600
-+++ src/Python-3.5.3/Python/thread_pthread.h	2017-03-04 22:18:01.577916300 -0600
+--- origsrc/Python-3.6.1rc1/Python/thread_pthread.h	2017-03-04 11:25:04.000000000 -0600
++++ src/Python-3.6.1rc1/Python/thread_pthread.h	2017-03-12 14:26:43.597702400 -0500
 @@ -603,36 +603,36 @@ _pythread_pthread_set_stacksize(size_t s
  
  #define Py_HAVE_NATIVE_TLS

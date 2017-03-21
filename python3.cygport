@@ -1,6 +1,6 @@
 NAME="python3"
-VERSION=3.5.3
-RELEASE=1
+VERSION=3.6.1
+RELEASE=0.1.rc1
 CATEGORY="Python Interpreters"
 SUMMARY="Py3K language interpreter"
 DESCRIPTION="Python is an interpreted, interactive, object-oriented programming
@@ -10,8 +10,8 @@ clear syntax. It has interfaces to many system calls and libraries, as well as
 to various window systems, and is extensible in C or C++. It is also usable as
 an extension language for applications that need a programmable interface."
 HOMEPAGE="http://www.python.org/"
-SRC_URI="http://www.python.org/ftp/python/${VERSION}/Python-${VERSION}.tar.xz"
-SRC_DIR="Python-${VERSION}"
+SRC_URI="http://www.python.org/ftp/python/${VERSION}/Python-${VERSION}rc1.tar.xz"
+SRC_DIR="Python-${VERSION}rc1"
 PATCH_URI="
 	3.4-dbm-cygwin.patch
 	3.1-enable-new-dtags.patch
@@ -22,20 +22,20 @@ PATCH_URI="
 	3.4-distutils-soname.patch
 	3.2-distutils-shlibext.patch
 	3.4-pep3149-cygwin.patch
-	3.5-thread-cygwin64.patch
+	3.6-thread-cygwin64.patch
 	3.2-getpath-exe-extension.patch
 	3.4-select-cygwin.patch
 	3.4-signal-cygwin.patch
 	3.4-struct-cygwin.patch
 	3.4-shebang.patch
+	3.6-ftm.patch
 "
-
 #	3.0b3-ossaudio.patch
 
 slot=${PV:0:3}
 abi=${slot}m
 pyrootdir=/usr/lib/python${slot}
-pyconfdir=${pyrootdir}/config-${abi}
+pyconfdir=${pyrootdir}/config-${abi}-${ARCH/i6/i3}-cygwin
 pydylddir=${pyrootdir}/lib-dynload
 
 PKG_NAMES="${NAME} ${NAME}-devel ${NAME}-test ${NAME}-tkinter idle3"
@@ -58,7 +58,7 @@ python3_CONTENTS="
 	${pyrootdir#/}/asyncio/
 	${pyrootdir#/}/collections/
 	${pyrootdir#/}/concurrent/
-	${pyrootdir#/}/config-${abi}/Makefile
+	${pyconfdir#/}/Makefile
 	${pyrootdir#/}/ctypes/
 	${pyrootdir#/}/curses/
 	${pyrootdir#/}/dbm/
@@ -73,7 +73,6 @@ python3_CONTENTS="
 	${pyrootdir#/}/lib2to3/
 	${pyrootdir#/}/logging/
 	${pyrootdir#/}/multiprocessing/
-	${pyrootdir#/}/plat-cygwin/
 	${pyrootdir#/}/pydoc_data/
 	${pyrootdir#/}/site-packages/
 	${pyrootdir#/}/sqlite3/
@@ -94,10 +93,10 @@ python3_CONTENTS="
 "
 python3_devel_CONTENTS="
 	--exclude=usr/include/python${abi}/pyconfig.h
-	--exclude=${pyrootdir#/}/config-${abi}/Makefile
+	--exclude=${pyconfdir#/}/Makefile
 	usr/bin/python3*-config
 	usr/include/
-	${pyrootdir#/}/config-${abi}/
+	${pyconfdir#/}/
 	usr/lib/*.a
 	usr/lib/pkgconfig/
 "
@@ -109,8 +108,8 @@ idle3_CONTENTS="
 	usr/bin/idle3*
 	${pyrootdir#/}/idlelib/
 	${pyrootdir#/}/turtledemo/
-	usr/share/applications/
-	usr/share/icons/
+	usr/share/applications/idle${slot}.desktop
+	usr/share/icons/hicolor/*/apps/idle${slot//.}.png
 "
 python3_test_SUMMARY="Py3K tests"
 python3_test_CONTENTS="
@@ -138,7 +137,7 @@ python3_tkinter_CONTENTS="
 
 REQUIRES_EXCLUDE_FROM="$pyrootdir/distutils/command/\*.exe:$pyrootdir/lib2to3/tests/data/\*.py:$pyrootdir/test"
 
-DIFF_EXCLUDES="plat-cygwin pyconfig.h.in"
+DIFF_EXCLUDES="pyconfig.h.in"
 
 NO_AUTOHEADER=1
 CYGCONF_ARGS="
@@ -176,9 +175,9 @@ src_install() {
 	for i in 16 32 48
 	do
 		insinto /usr/share/icons/hicolor/${i}x${i}/apps
-		newins ${S}/Lib/idlelib/Icons/idle_${i}.png idle3.png
+		newins ${S}/Lib/idlelib/Icons/idle_${i}.png idle${slot//.}.png
 	done
-	make_desktop_entry idle3 "IDLE ${slot}" idle3 "Development;IDE"
+	make_desktop_entry idle${slot} "IDLE ${slot}" idle${slot//.} "Development;IDE"
 
 	dodir /var/lib/rebase/dynpath.d
 	echo ${pyrootdir}/site-packages > ${D}/var/lib/rebase/dynpath.d/${NAME}
