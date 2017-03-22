@@ -1,6 +1,6 @@
 NAME="python3"
 VERSION=3.6.1
-RELEASE=0.1.rc1
+RELEASE=1
 CATEGORY="Python Interpreters"
 SUMMARY="Py3K language interpreter"
 DESCRIPTION="Python is an interpreted, interactive, object-oriented programming
@@ -10,8 +10,8 @@ clear syntax. It has interfaces to many system calls and libraries, as well as
 to various window systems, and is extensible in C or C++. It is also usable as
 an extension language for applications that need a programmable interface."
 HOMEPAGE="http://www.python.org/"
-SRC_URI="http://www.python.org/ftp/python/${VERSION}/Python-${VERSION}rc1.tar.xz"
-SRC_DIR="Python-${VERSION}rc1"
+SRC_URI="http://www.python.org/ftp/python/${VERSION}/Python-${VERSION}.tar.xz"
+SRC_DIR="Python-${VERSION}"
 PATCH_URI="
 	3.4-dbm-cygwin.patch
 	3.1-enable-new-dtags.patch
@@ -29,6 +29,7 @@ PATCH_URI="
 	3.4-struct-cygwin.patch
 	3.4-shebang.patch
 	3.6-ftm.patch
+	3.6-getrandom.patch
 "
 #	3.0b3-ossaudio.patch
 
@@ -135,7 +136,7 @@ python3_tkinter_CONTENTS="
 	${pyrootdir#/}/__pycache__/turtle.*
 "
 
-REQUIRES_EXCLUDE_FROM="$pyrootdir/distutils/command/\*.exe:$pyrootdir/lib2to3/tests/data/\*.py:$pyrootdir/test"
+REQUIRES_EXCLUDE_FROM="*/distutils/command/*:*/lib2to3/tests/data/*:*/test/*"
 
 DIFF_EXCLUDES="pyconfig.h.in"
 
