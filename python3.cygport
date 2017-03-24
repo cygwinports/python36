@@ -1,6 +1,6 @@
 NAME="python3"
 VERSION=3.6.1
-RELEASE=1
+RELEASE=2
 CATEGORY="Python Interpreters"
 SUMMARY="Py3K language interpreter"
 DESCRIPTION="Python is an interpreted, interactive, object-oriented programming
