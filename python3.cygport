@@ -29,7 +29,6 @@ PATCH_URI="
 	3.4-struct-cygwin.patch
 	3.4-shebang.patch
 	3.6-ftm.patch
-	3.6-getrandom.patch
 "
 #	3.0b3-ossaudio.patch
 
