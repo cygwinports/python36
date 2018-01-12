@@ -1,5 +1,5 @@
 NAME="python3"
-VERSION=3.6.3
+VERSION=3.6.4
 RELEASE=1
 CATEGORY="Python Interpreters"
 SUMMARY="Py3K language interpreter"
@@ -13,7 +13,6 @@ HOMEPAGE="http://www.python.org/"
 SRC_URI="http://www.python.org/ftp/python/${VERSION}/Python-${VERSION}.tar.xz"
 SRC_DIR="Python-${VERSION}"
 PATCH_URI="
-	http://pkgs.fedoraproject.org/cgit/rpms/python3.git/plain/00279-fix-memory-corruption-due-to-allocator-mix.patch
 	3.4-dbm-cygwin.patch
 	3.1-enable-new-dtags.patch
 	3.4-tkinter-cygwin.patch
