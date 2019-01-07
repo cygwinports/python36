@@ -1,5 +1,5 @@
 NAME="python3"
-VERSION=3.6.4
+VERSION=3.7.2
 RELEASE=1
 CATEGORY="Python Interpreters"
 SUMMARY="Py3K language interpreter"
@@ -16,19 +16,13 @@ PATCH_URI="
 	3.4-dbm-cygwin.patch
 	3.1-enable-new-dtags.patch
 	3.4-tkinter-cygwin.patch
-	3.4-ctypes-cygwin.patch
-	3.1-ncurses-abi6.patch
+	3.7-ctypes-cygwin.patch
 	3.2-export-PySignal_SetWakeupFd.patch
-	3.4-distutils-soname.patch
 	3.2-distutils-shlibext.patch
 	3.4-pep3149-cygwin.patch
-	3.6-thread-cygwin64.patch
 	3.2-getpath-exe-extension.patch
 	3.4-select-cygwin.patch
-	3.4-signal-cygwin.patch
-	3.4-struct-cygwin.patch
 	3.4-shebang.patch
-	3.6-ftm.patch
 "
 #	3.0b3-ossaudio.patch
 

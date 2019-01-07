@@ -10,4 +10,4 @@ Cygwin ld (as of binutils-2.19.51) does not understand --enable-new-dtags.
 +        if sys.platform[:6] == "darwin" or sys.platform[:6] == "cygwin":
              # MacOSX's linker doesn't understand the -R flag at all
              return "-L" + dir
-         elif sys.platform[:5] == "hp-ux":
+         elif sys.platform[:7] == "freebsd":
