@@ -1,5 +1,5 @@
-NAME="python3"
-VERSION=3.6.4
+NAME="python36"
+VERSION=3.6.8
 RELEASE=1
 CATEGORY="Python Interpreters"
 SUMMARY="Py3K language interpreter"
@@ -13,6 +13,7 @@ HOMEPAGE="http://www.python.org/"
 SRC_URI="http://www.python.org/ftp/python/${VERSION}/Python-${VERSION}.tar.xz"
 SRC_DIR="Python-${VERSION}"
 PATCH_URI="
+	00189-use-rpm-wheels.patch
 	3.4-dbm-cygwin.patch
 	3.1-enable-new-dtags.patch
 	3.4-tkinter-cygwin.patch
@@ -38,21 +39,20 @@ pyrootdir=/usr/lib/python${slot}
 pyconfdir=${pyrootdir}/config-${abi}-${ARCH/i6/i3}-cygwin
 pydylddir=${pyrootdir}/lib-dynload
 
-PKG_NAMES="${NAME} ${NAME}-devel ${NAME}-test ${NAME}-tkinter idle3"
-python3_REQUIRES="binutils libuuid-devel" # ctypes.util.find_library, uuid.py
-python3_CONTENTS="
+PKG_NAMES="${NAME} ${NAME}-devel ${NAME}-test ${NAME}-tkinter idle${slot//.}"
+python36_REQUIRES="binutils libuuid-devel" # ctypes.util.find_library, uuid.py
+python36_REQUIRES+=" python-pip-wheel python-setuptools-wheel" # ensurepip
+python36_CONTENTS="
 	--exclude=idle3* --exclude=idlelib
 	--exclude=_tkinter*.dll --exclude=tkinter --exclude=turtle*
 	--exclude=${pyrootdir#/}/*/test
 	--exclude=${pyrootdir#/}/*/tests
 	--exclude=*_test*.dll
-	usr/bin/2to3*
 	usr/bin/libpython${abi}.dll
-	usr/bin/pydoc*
-	usr/bin/python3
+	usr/bin/pydoc${slot}
 	usr/bin/python${slot}
 	usr/bin/python${abi}.exe
-	usr/bin/pyvenv*
+	usr/bin/pyvenv-${slot}
 	usr/include/python${abi}/pyconfig.h
 	${pydylddir#/}/
 	${pyrootdir#/}/asyncio/
@@ -87,32 +87,34 @@ python3_CONTENTS="
 	${pyrootdir#/}/xmlrpc/
 	${pyrootdir#/}/*.py
 	${pyrootdir#/}/__pycache__/
-	usr/share/doc/
-	usr/share/man/
-	var/lib/rebase/dynpath.d/
+	usr/share/doc/${NAME}/
+	usr/share/man/man1/python${slot}.1*
+	var/lib/rebase/dynpath.d/${NAME}
 "
-python3_devel_CONTENTS="
+python36_devel_REQUIRES="python${slot/.}-setuptools"
+python36_devel_CONTENTS="
 	--exclude=usr/include/python${abi}/pyconfig.h
 	--exclude=${pyconfdir#/}/Makefile
-	usr/bin/python3*-config
-	usr/include/
+	usr/bin/2to3-${slot}
+	usr/bin/python${slot}*-config
+	usr/include/python${abi}/
 	${pyconfdir#/}/
-	usr/lib/*.a
-	usr/lib/pkgconfig/
+	usr/lib/libpython${slot}*.dll.a
+	usr/lib/pkgconfig/python-${slot}.pc
 "
-idle3_SUMMARY="Py3K Tkinter_based IDE"
-idle3_REQUIRES="python3-tkinter"
-idle3_CONTENTS="
+idle36_SUMMARY="Py3K Tkinter_based IDE"
+idle36_REQUIRES="${NAME}-tkinter"
+idle36_CONTENTS="
 	--exclude=idle_test
 	etc/
-	usr/bin/idle3*
+	usr/bin/idle${slot}
 	${pyrootdir#/}/idlelib/
 	${pyrootdir#/}/turtledemo/
 	usr/share/applications/idle${slot}.desktop
 	usr/share/icons/hicolor/*/apps/idle${slot//.}.png
 "
-python3_test_SUMMARY="Py3K tests"
-python3_test_CONTENTS="
+python36_test_SUMMARY="Py3K tests"
+python36_test_CONTENTS="
 	--exclude=${pyrootdir#/}/test/__init__.py
 	--exclude=${pyrootdir#/}/test/__pycache__/__init__.*
 	--exclude=${pyrootdir#/}/test/support
@@ -126,18 +128,22 @@ python3_test_CONTENTS="
 	${pyrootdir#/}/tkinter/test/
 	${pyrootdir#/}/unittest/test/
 "
-python3_tkinter_SUMMARY="Py3K Tkinter GUI module"
-python3_tkinter_REQUIRES="tcl-tix"
-python3_tkinter_CONTENTS="
-	--exclude=test ${pydylddir#/}/_tkinter*
+python36_tkinter_SUMMARY="Py3K Tkinter GUI module"
+python36_tkinter_REQUIRES="tcl-tix"
+python36_tkinter_CONTENTS="
+	--exclude=test
+	${pydylddir#/}/_tkinter*
 	${pyrootdir#/}/tkinter/
 	${pyrootdir#/}/turtle.py
 	${pyrootdir#/}/__pycache__/turtle.*
 "
+PKG_IGNORE="usr/share/man/man1/python3.1*"
 
 REQUIRES_EXCLUDE_FROM="*/distutils/command/*:*/lib2to3/tests/data/*:*/test/*"
 
 DIFF_EXCLUDES="pyconfig.h.in"
+# for 00189-use-rpm-wheels.patch
+DISTCLEANFILES="Lib/ensurepip/_bundled/*.whl"
 
 NO_AUTOHEADER=1
 CYGCONF_ARGS="
@@ -159,17 +165,11 @@ src_install() {
 
 	rm -f ${D}${pyrootdir}/LICENSE.txt
 
-	dosym python${abi}.exe /usr/bin/python3
-	dosym python${abi}-config /usr/bin/python3-config
 	dosym python${abi}-config /usr/bin/python${slot}-config
-	dosym python-${slot}.pc /usr/lib/pkgconfig/python3.pc
 
 	dosym ${pyconfdir#/usr/lib/}/libpython${abi}.dll.a /usr/lib/libpython${abi}.dll.a
 	dosym ${pyconfdir#/usr/lib/}/libpython${abi}.dll.a /usr/lib/libpython${slot}.dll.a
 
-	dosym idle${slot} /usr/bin/idle3
-	dosym pydoc${slot} /usr/bin/pydoc3
-	dosym pyvenv-${slot} /usr/bin/pyvenv3
 	sed -i -e '1 s/\.exe//' ${D}/usr/bin/*${slot}
 
 	for i in 16 32 48
