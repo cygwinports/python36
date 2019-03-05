@@ -91,7 +91,7 @@ python36_CONTENTS="
 	usr/share/man/man1/python${slot}.1*
 	var/lib/rebase/dynpath.d/${NAME}
 "
-python36_devel_REQUIRES="python${slot/.}-setuptools"
+python36_devel_REQUIRES="python${slot/.}-setuptools libcrypt-devel"
 python36_devel_CONTENTS="
 	--exclude=usr/include/python${abi}/pyconfig.h
 	--exclude=${pyconfdir#/}/Makefile
