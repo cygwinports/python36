@@ -1,0 +1,11 @@
+--- origsrc/Python-3.6.9/setup.py	2019-07-21 14:26:51.396871400 -0400
++++ src/Python-3.6.9/setup.py	2019-07-21 14:28:10.310207800 -0400
+@@ -2224,7 +2224,7 @@ class PyBuildExt(build_ext):
+         return ext
+ 
+     def _detect_nis(self, inc_dirs, lib_dirs):
+-        if host_platform in {'win32', 'cygwin', 'qnx6'}:
++        if host_platform in {'win32', 'qnx6'}:
+             return None
+ 
+         libs = []

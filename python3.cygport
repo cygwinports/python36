@@ -1,5 +1,5 @@
 NAME="python36"
-VERSION=3.6.8
+VERSION=3.6.9
 RELEASE=1
 CATEGORY="Python Interpreters"
 SUMMARY="Py3K language interpreter"
@@ -30,6 +30,7 @@ PATCH_URI="
 	3.4-struct-cygwin.patch
 	3.4-shebang.patch
 	3.6-ftm.patch
+	3.6-nis-cygwin.patch
 "
 #	3.0b3-ossaudio.patch
 
